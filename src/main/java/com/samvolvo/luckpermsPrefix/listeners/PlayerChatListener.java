@@ -15,6 +15,10 @@ public class PlayerChatListener implements Listener {
 
     @EventHandler
     public void onPlayerChat(AsyncPlayerChatEvent e){
+        if (!plugin.getConfig().getBoolean("settings.enableChatTags")){
+            return;
+        }
+
         String prefix = plugin.getPrefixManager().getPlayerPrefix(e.getPlayer());
 
         if (prefix.isEmpty() || prefix == null){

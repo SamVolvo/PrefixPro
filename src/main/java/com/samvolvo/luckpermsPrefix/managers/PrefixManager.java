@@ -21,7 +21,7 @@ public class PrefixManager {
     public String getPlayerPrefix(Player player){
         User user = plugin.getLuckPerms().getUserManager().getUser(player.getUniqueId());
         if (user == null){
-            plugin.getLogger().warning("Luckperms did not found a user for " + player.getName());
+            plugin.getAPILogger().warning("Luckperms did not found a user for " + player.getName());
             return null;
         }
 
@@ -32,7 +32,7 @@ public class PrefixManager {
                 .max(Comparator.comparingInt(group -> group.getWeight().orElse(0)));
 
         if (highestWeightGroup.isEmpty()){
-            plugin.getLogger().warning("No group found for player " + player.getName());
+            plugin.getAPILogger().warning("No group found for player " + player.getName());
             return null;
         }
 
@@ -41,7 +41,7 @@ public class PrefixManager {
         String prefix = metaData.getPrefix();
 
         if (prefix == null || prefix.isEmpty()){
-            plugin.getLogger().warning("No prefix found for group (" + group.getName() + ") for player " + player.getName());
+            plugin.getAPILogger().warning("No prefix found for group (" + group.getName() + ") for player " + player.getName());
             prefix = "";
         }
 

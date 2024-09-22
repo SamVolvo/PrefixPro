@@ -4,10 +4,9 @@ main: com.samvolvo.luckpermsPrefix.LuckpermsPrefix
 api-version: '1.20'
 depend: [LuckPerms]
 commands:
-  reloadprefix:
-    description: Reload all prefixes of online players.
-    permission: luckpermsprefix.reload
-    usage: /reloadprefix
+  luckpermsprefix:
+    description: Use the plugins pre-installed tools.
+    usage: /luckpermsprefix reload <what>
 permissions:
   luckpermsprefix.reload:
     description: Can use the /reloadprefix command
