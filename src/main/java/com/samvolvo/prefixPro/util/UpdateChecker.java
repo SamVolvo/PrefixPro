@@ -7,6 +7,7 @@ import com.samvolvo.prefixPro.PrefixPro;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.Response;
+import org.bukkit.ChatColor;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -33,7 +34,7 @@ public class UpdateChecker {
             if (releasesBehind > 0) {
                 message.add("*********************************************************************");
                 message.add("PrefixPro is outdated!");
-                message.add("\"Latest version: " + tagName);
+                message.add("Latest version: " + tagName);
                 message.add("Your version: " +   plugin.getDescription().getVersion());
                 message.add("https://modrinth.com/project/prefixpro");
                 message.add("*********************************************************************");
@@ -50,7 +51,7 @@ public class UpdateChecker {
         String currentVersion = "V" + v;
         int releasesBehind = getReleasesBehind(currentVersion);
         if (releasesBehind > 0) {
-            return ("§cYou are §4" + releasesBehind + "§c release(s) behind!\n" +
+            return (ChatColor.translateAlternateColorCodes('&', plugin.getPrefix()) + "§7: §cYou are §4" + releasesBehind + "§c release(s) behind!\n" +
                     "Download the newest release at https://modrinth.com/project/prefixpro");
         }
         else {

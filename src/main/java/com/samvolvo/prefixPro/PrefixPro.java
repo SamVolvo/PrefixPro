@@ -20,6 +20,7 @@ import org.bukkit.scoreboard.ScoreboardManager;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.List;
 
 public final class PrefixPro extends JavaPlugin {
 
@@ -29,6 +30,7 @@ public final class PrefixPro extends JavaPlugin {
     private Scoreboard scoreboard;
 
     // Config
+    private final String prefix = "&ePrefix&dPro";
     private FileConfiguration config;
     private File configFile;
 
@@ -38,16 +40,17 @@ public final class PrefixPro extends JavaPlugin {
     // Utils
     private PlayerTeamUtil playerTeamUtil;
     private final Logger logger = new Logger();
+    private UpdateChecker updateChecker;
 
     @Override
     public void onEnable() {
         // Plugin startup logic
-        getAPILogger().loading("Booting PrefixPro");
+        getAPILogger().loading("Booting " + prefix);
 
         if (isLuckpermsInstalled()){
             getAPILogger().info("connected to LuckPerms");
         }else{
-            getAPILogger().warning("LuckPerms not found! Disabling now!");
+            getAPILogger().warning("LuckPerms not found! Disabling " + prefix + "&r!");
             getServer().getPluginManager().disablePlugin(this);
         }
 
@@ -78,8 +81,20 @@ public final class PrefixPro extends JavaPlugin {
         eventBus.subscribe(this, NodeAddEvent.class, listener::onNodeAdd);
         eventBus.subscribe(this, NodeRemoveEvent.class, listener::onNodeRemove);
 
+        updateChecker = new UpdateChecker(this);
+        CheckForUpdates(updateChecker);
+        Metrics metrics = new Metrics(this, 23462);
 
-        getAPILogger().info("&eLuckperms&dPrefix &aEnabled");
+        getAPILogger().info(prefix + " &aEnabled");
+    }
+
+    public void CheckForUpdates(UpdateChecker updateChecker){
+        List<String> nameless = updateChecker.generateUpdateMessage(getDescription().getVersion());
+        if (!nameless.isEmpty()){
+            for (String message : nameless){
+                getAPILogger().warning(message);
+            }
+        }
     }
 
     public LuckPerms getLuckPerms() {
@@ -104,10 +119,18 @@ public final class PrefixPro extends JavaPlugin {
 
     public Logger getAPILogger(){return logger;}
 
+    public String getPrefix(){
+        return prefix;
+    }
+
+    public UpdateChecker getUpdateChecker(){
+        return updateChecker;
+    }
+
     @Override
     public void onDisable() {
         // Plugin shutdown logic
-        getAPILogger().info("&eLuckperms&dPrefix &cDisabled");
+        getAPILogger().info(prefix + " &cDisabled");
     }
 
     // Checks
@@ -128,7 +151,7 @@ public final class PrefixPro extends JavaPlugin {
         try{
             config.save(configFile);
         } catch (IOException e){
-            getAPILogger().warning("Unable to save config.yml");
+            getAPILogger().error("Unable to save config.yml");
         }
     }
 

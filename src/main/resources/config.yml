@@ -4,3 +4,6 @@ settings:
   enableNameTag: false
   enableChatTags: false
   enableTabName: false
+
+## Update 2.0 will add support for suffixes
+## Current config version 1.2

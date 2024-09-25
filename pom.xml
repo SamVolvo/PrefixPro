@@ -5,11 +5,11 @@
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>com.samvolvo</groupId>
-    <artifactId>luckpermsprefix</artifactId>
+    <artifactId>prefixpro</artifactId>
     <version>1.2</version>
     <packaging>jar</packaging>
 
-    <name>luckpermsprefix</name>
+    <name>PrefixPro</name>
 
     <properties>
         <java.version>21</java.version>
@@ -70,15 +70,15 @@
             <scope>provided</scope>
         </dependency>
         <dependency>
+            <groupId>com.google.code.gson</groupId>
+            <artifactId>gson</artifactId>
+            <version>2.10.1</version>
+        </dependency>
+        <dependency>
             <groupId>net.luckperms</groupId>
             <artifactId>api</artifactId>
             <version>5.4</version>
             <scope>provided</scope>
-        </dependency>
-        <dependency>
-            <groupId>com.google.code.gson</groupId>
-            <artifactId>gson</artifactId>
-            <version>2.10.1</version>
         </dependency>
         <dependency>
             <groupId>org.json</groupId>

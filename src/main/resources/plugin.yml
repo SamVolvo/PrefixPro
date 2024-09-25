@@ -11,4 +11,6 @@ permissions:
   prefixpro.reload:
     description: Can use the /prefixpro command
     default: false
-
+  prefixpro.version:
+    description: Get version warnings when joining
+    default: false
