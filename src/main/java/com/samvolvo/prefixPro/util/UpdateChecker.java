@@ -1,9 +1,9 @@
-package com.samvolvo.luckpermsPrefix.util;
+package com.samvolvo.prefixPro.util;
 
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonParser;
-import com.samvolvo.luckpermsPrefix.LuckpermsPrefix;
+import com.samvolvo.prefixPro.PrefixPro;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.Response;
@@ -15,9 +15,9 @@ import java.util.List;
 
 
 public class UpdateChecker {
-    private final LuckpermsPrefix plugin;
+    private final PrefixPro plugin;
 
-    public UpdateChecker(LuckpermsPrefix plugin){
+    public UpdateChecker(PrefixPro plugin){
         this.plugin = plugin;
     }
 

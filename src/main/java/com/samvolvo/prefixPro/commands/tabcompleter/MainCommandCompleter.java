@@ -1,4 +1,4 @@
-package com.samvolvo.luckpermsPrefix.commands.tabcompleter;
+package com.samvolvo.prefixPro.commands.tabcompleter;
 
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
@@ -12,7 +12,7 @@ public class MainCommandCompleter implements TabCompleter {
     public List<String> onTabComplete(CommandSender sender, Command command, String label, String[] args) {
 
         List<String> completions = new ArrayList<>();
-        if (command.getName().equalsIgnoreCase("luckpermsprefix")){
+        if (command.getName().equalsIgnoreCase("prefixpro")){
             if (args.length == 1){
                 completions.add("prefix");
                 completions.add("config");

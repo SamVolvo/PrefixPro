@@ -1,6 +1,6 @@
-package com.samvolvo.luckpermsPrefix.listeners;
+package com.samvolvo.prefixPro.listeners;
 
-import com.samvolvo.luckpermsPrefix.LuckpermsPrefix;
+import com.samvolvo.prefixPro.PrefixPro;
 import net.luckperms.api.event.node.NodeAddEvent;
 import net.luckperms.api.event.node.NodeRemoveEvent;
 import org.bukkit.Bukkit;
@@ -12,10 +12,10 @@ import java.util.LinkedList;
 import java.util.Queue;
 
 public class LuckPermsListener implements Listener {
-    private final LuckpermsPrefix plugin;
+    private final PrefixPro plugin;
     private final Queue<Player> playerQueue;
 
-    public LuckPermsListener(LuckpermsPrefix plugin) {
+    public LuckPermsListener(PrefixPro plugin) {
         this.plugin = plugin;
         this.playerQueue = new LinkedList<>();
     }

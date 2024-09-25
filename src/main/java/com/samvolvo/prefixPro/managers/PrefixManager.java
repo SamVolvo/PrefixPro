@@ -1,6 +1,6 @@
-package com.samvolvo.luckpermsPrefix.managers;
+package com.samvolvo.prefixPro.managers;
 
-import com.samvolvo.luckpermsPrefix.LuckpermsPrefix;
+import com.samvolvo.prefixPro.PrefixPro;
 import net.luckperms.api.cacheddata.CachedMetaData;
 import net.luckperms.api.model.group.Group;
 import net.luckperms.api.model.user.User;
@@ -12,9 +12,9 @@ import java.util.Comparator;
 import java.util.Optional;
 
 public class PrefixManager {
-    private LuckpermsPrefix plugin;
+    private PrefixPro plugin;
 
-    public PrefixManager(LuckpermsPrefix plugin){
+    public PrefixManager(PrefixPro plugin){
         this.plugin = plugin;
     }
 

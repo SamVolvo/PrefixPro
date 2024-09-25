@@ -1,14 +1,14 @@
-package com.samvolvo.luckpermsPrefix.listeners;
+package com.samvolvo.prefixPro.listeners;
 
-import com.samvolvo.luckpermsPrefix.LuckpermsPrefix;
+import com.samvolvo.prefixPro.PrefixPro;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerJoinEvent;
 
 public class PlayerJoinListener implements Listener {
-    private final LuckpermsPrefix plugin;
+    private final PrefixPro plugin;
 
-    public PlayerJoinListener(LuckpermsPrefix plugin){
+    public PlayerJoinListener(PrefixPro plugin){
         this.plugin = plugin;
     }
 

@@ -1,6 +1,5 @@
-package com.samvolvo.luckpermsPrefix.util;
+package com.samvolvo.prefixPro.util;
 
-import com.samvolvo.luckpermsPrefix.LuckpermsPrefix;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 

@@ -1,15 +1,15 @@
-package com.samvolvo.luckpermsPrefix.listeners;
+package com.samvolvo.prefixPro.listeners;
 
-import com.samvolvo.luckpermsPrefix.LuckpermsPrefix;
+import com.samvolvo.prefixPro.PrefixPro;
 import org.bukkit.ChatColor;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.AsyncPlayerChatEvent;
 
 public class PlayerChatListener implements Listener {
-    private final LuckpermsPrefix plugin;
+    private final PrefixPro plugin;
 
-    public PlayerChatListener(LuckpermsPrefix plugin){
+    public PlayerChatListener(PrefixPro plugin){
         this.plugin = plugin;
     }
 

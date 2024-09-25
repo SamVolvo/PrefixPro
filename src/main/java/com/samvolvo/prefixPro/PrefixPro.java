@@ -1,10 +1,10 @@
-package com.samvolvo.luckpermsPrefix;
+package com.samvolvo.prefixPro;
 
-import com.samvolvo.luckpermsPrefix.commands.*;
-import com.samvolvo.luckpermsPrefix.commands.tabcompleter.MainCommandCompleter;
-import com.samvolvo.luckpermsPrefix.listeners.*;
-import com.samvolvo.luckpermsPrefix.managers.*;
-import com.samvolvo.luckpermsPrefix.util.*;
+import com.samvolvo.prefixPro.commands.*;
+import com.samvolvo.prefixPro.commands.tabcompleter.MainCommandCompleter;
+import com.samvolvo.prefixPro.listeners.*;
+import com.samvolvo.prefixPro.managers.*;
+import com.samvolvo.prefixPro.util.*;
 import net.luckperms.api.LuckPerms;
 import net.luckperms.api.LuckPermsProvider;
 import net.luckperms.api.event.EventBus;
@@ -21,7 +21,7 @@ import org.bukkit.scoreboard.ScoreboardManager;
 import java.io.File;
 import java.io.IOException;
 
-public final class LuckpermsPrefix extends JavaPlugin {
+public final class PrefixPro extends JavaPlugin {
 
     // ApiStuff
     private LuckPerms luckPerms;
@@ -42,7 +42,7 @@ public final class LuckpermsPrefix extends JavaPlugin {
     @Override
     public void onEnable() {
         // Plugin startup logic
-        getAPILogger().loading("Booting LuckpermsPrefix");
+        getAPILogger().loading("Booting PrefixPro");
 
         if (isLuckpermsInstalled()){
             getAPILogger().info("connected to LuckPerms");
@@ -65,8 +65,8 @@ public final class LuckpermsPrefix extends JavaPlugin {
         playerTeamUtil = new PlayerTeamUtil(this);
 
         // Commands
-        getCommand("luckpermsprefix").setExecutor(new MainCommand(this));
-        getCommand("luckpermsprefix").setTabCompleter(new MainCommandCompleter());
+        getCommand("prefixpro").setExecutor(new MainCommand(this));
+        getCommand("prefixpro").setTabCompleter(new MainCommandCompleter());
 
         // Listeners
         getServer().getPluginManager().registerEvents(new PlayerJoinListener(this), this);

@@ -1,14 +1,14 @@
-package com.samvolvo.luckpermsPrefix.util;
+package com.samvolvo.prefixPro.util;
 
-import com.samvolvo.luckpermsPrefix.LuckpermsPrefix;
+import com.samvolvo.prefixPro.PrefixPro;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 import org.bukkit.scoreboard.Team;
 
 public class PlayerTeamUtil {
-    private final LuckpermsPrefix plugin;
+    private final PrefixPro plugin;
 
-    public PlayerTeamUtil(LuckpermsPrefix plugin){
+    public PlayerTeamUtil(PrefixPro plugin){
         this.plugin = plugin;
     }
 

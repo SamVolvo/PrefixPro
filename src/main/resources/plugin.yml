@@ -1,14 +1,14 @@
-name: LuckpermsPrefix
-version: '1.0-SNAPSHOT'
-main: com.samvolvo.luckpermsPrefix.LuckpermsPrefix
+name: PrefixPro
+version: '${project.version}'
+main: com.samvolvo.prefixPro.PrefixPro
 api-version: '1.20'
 depend: [LuckPerms]
 commands:
-  luckpermsprefix:
+  prefixpro:
     description: Use the plugins pre-installed tools.
-    usage: /luckpermsprefix reload <what>
+    usage: /prefixpro <option1> <option2>
 permissions:
-  luckpermsprefix.reload:
-    description: Can use the /reloadprefix command
+  prefixpro.reload:
+    description: Can use the /prefixpro command
     default: false
 
