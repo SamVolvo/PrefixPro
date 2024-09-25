@@ -1,12 +1,10 @@
 package com.samvolvo.luckpermsPrefix;
 
-import com.samvolvo.luckpermsPrefix.commands.MainCommand;
-import com.samvolvo.luckpermsPrefix.listeners.LuckPermsListener;
-import com.samvolvo.luckpermsPrefix.listeners.PlayerChatListener;
-import com.samvolvo.luckpermsPrefix.listeners.PlayerJoinListener;
-import com.samvolvo.luckpermsPrefix.managers.PrefixManager;
-import com.samvolvo.luckpermsPrefix.util.Logger;
-import com.samvolvo.luckpermsPrefix.util.PlayerTeamUtil;
+import com.samvolvo.luckpermsPrefix.commands.*;
+import com.samvolvo.luckpermsPrefix.commands.tabcompleter.MainCommandCompleter;
+import com.samvolvo.luckpermsPrefix.listeners.*;
+import com.samvolvo.luckpermsPrefix.managers.*;
+import com.samvolvo.luckpermsPrefix.util.*;
 import net.luckperms.api.LuckPerms;
 import net.luckperms.api.LuckPermsProvider;
 import net.luckperms.api.event.EventBus;
@@ -68,6 +66,7 @@ public final class LuckpermsPrefix extends JavaPlugin {
 
         // Commands
         getCommand("luckpermsprefix").setExecutor(new MainCommand(this));
+        getCommand("luckpermsprefix").setTabCompleter(new MainCommandCompleter());
 
         // Listeners
         getServer().getPluginManager().registerEvents(new PlayerJoinListener(this), this);
