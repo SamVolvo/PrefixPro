@@ -55,7 +55,7 @@ public class UpdateChecker {
                     "Download the newest release at https://modrinth.com/project/prefixpro");
         }
         else {
-            return null;
+            return "§7You are running the latest version of PrefixPro";
         }
     }
 

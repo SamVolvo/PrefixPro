@@ -21,6 +21,6 @@ public class MainCommandCompleter implements TabCompleter {
             }
         }
 
-        return List.of();
+        return completions;
     }
 }
