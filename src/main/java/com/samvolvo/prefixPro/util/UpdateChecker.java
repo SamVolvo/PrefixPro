@@ -39,6 +39,7 @@ public class UpdateChecker {
                 message.add("https://modrinth.com/project/prefixpro");
                 message.add("*********************************************************************");
             }else{
+                message = null;
                 return message;
             }
             return message;
@@ -66,8 +67,12 @@ public class UpdateChecker {
             if (releases != null) {
                 for (JsonElement release : releases) {
                     String tagName = release.getAsJsonObject().get("tag_name").getAsString();
-                    if (!tagName.equalsIgnoreCase(currentVersion)) behind++;
-                    else return behind;
+                    if (!tagName.equalsIgnoreCase(currentVersion)) {
+                        behind++;
+                    }else{
+                        plugin.getAPILogger().debug("You are " + behind + "releases behind");
+                        return behind;
+                    }
                 }
                 return behind;
             }
