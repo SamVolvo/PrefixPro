@@ -19,11 +19,13 @@ public class UpdateChecker {
     private final PrefixPro plugin;
     private final Logger logger;
     private final String modrinthProjectId;
+    private final String currentVersion;
 
     public UpdateChecker(PrefixPro plugin, String modrinthProjectId) {
         this.plugin = plugin;
         this.logger = plugin.getCustomLogger();
         this.modrinthProjectId = modrinthProjectId;
+        this.currentVersion = normalizeVersion(plugin.getDescription().getVersion());
     }
 
     public void checkForUpdates() {
@@ -34,8 +36,6 @@ public class UpdateChecker {
         HttpURLConnection connection = null;
 
         try {
-            String currentVersion = normalizeVersion(plugin.getDescription().getVersion());
-
             URL url = new URL(
                     "https://api.modrinth.com/v2/project/"
                             + modrinthProjectId
@@ -90,13 +90,15 @@ public class UpdateChecker {
 
             if (currentVersion.equalsIgnoreCase(latestVersion)) {
                 logger.info("You are running the latest version of PrefixPro! (" + currentVersion + ")");
-            } else {
+            } else if (isNewerVersion(latestVersion, currentVersion)) {
                 logger.warning("A new version of PrefixPro is available!");
                 logger.warning("Current version: " + currentVersion);
                 logger.warning("Latest version: " + latestVersion);
                 if (publishedAt != null && !publishedAt.isBlank()) {
                     logger.warning("Published at: " + publishedAt);
                 }
+            } else {
+                logger.info("PrefixPro " + currentVersion + " is newer than the published release.");
             }
 
         } catch (Exception e) {
@@ -133,6 +135,7 @@ public class UpdateChecker {
             }
 
             JsonObject versionObject = element.getAsJsonObject();
+            if (!"release".equals(getAsString(versionObject, "version_type"))) continue;
             String datePublishedRaw = getAsString(versionObject, "date_published");
 
             if (datePublishedRaw == null || datePublishedRaw.isBlank()) {
@@ -178,5 +181,20 @@ public class UpdateChecker {
         }
 
         return version;
+    }
+
+    public static boolean isNewerVersion(String candidate, String current) {
+        try {
+            String[] next = candidate.replaceFirst("^[vV]", "").split("\\.");
+            String[] installed = current.replaceFirst("^[vV]", "").split("\\.");
+            for (int i = 0; i < Math.max(next.length, installed.length); i++) {
+                int a = i < next.length ? Integer.parseInt(next[i]) : 0;
+                int b = i < installed.length ? Integer.parseInt(installed[i]) : 0;
+                if (a != b) return a > b;
+            }
+        } catch (NumberFormatException ignored) {
+            // Unknown version schemes must not generate false update notifications.
+        }
+        return false;
     }
 }

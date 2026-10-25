@@ -1,49 +1,22 @@
 package com.samvolvo.prefixPro.listeners;
 
 import com.samvolvo.prefixPro.PrefixPro;
-import org.bukkit.ChatColor;
-import org.bukkit.configuration.file.FileConfiguration;
-import org.bukkit.event.EventHandler;
-import org.bukkit.event.Listener;
-import org.bukkit.event.player.PlayerJoinEvent;
-import org.bukkit.event.player.PlayerQuitEvent;
+import org.bukkit.event.*;
+import org.bukkit.event.player.*;
 
 public class CustomJoinMessage implements Listener {
-    private PrefixPro plugin;
-    private FileConfiguration config;
+    private final PrefixPro plugin;
+    public CustomJoinMessage(PrefixPro plugin) { this.plugin = plugin; }
 
-    public CustomJoinMessage(PrefixPro plugin){
-        this.plugin = plugin;
-        config = plugin.getConfig();
-    }
-
-    // Custom Join Message
     @EventHandler
-    public void onPlayerJoin(PlayerJoinEvent event){
-
-        if (!config.getBoolean("messages.join-leave-message.enabled")){
-            event.setJoinMessage(null);
-            return;
-        }
-
-        String playerName = event.getPlayer().getName();
-
-        event.setJoinMessage(ChatColor.translateAlternateColorCodes('&', "&e" + playerName +" joined the game"));
+    public void onPlayerJoin(PlayerJoinEvent event) {
+        event.setJoinMessage(plugin.getConfig().getBoolean("messages.join-leave-message.enabled", true)
+                ? plugin.getMessages().get("join").replace("{player}", event.getPlayer().getName()) : null);
     }
 
-    // Custom Leave message
     @EventHandler
-    public void onPlayerLeave(PlayerQuitEvent event){
-
-        if (!config.getBoolean("messages.join-leave-message.enabled")){
-            event.setQuitMessage(null);
-            return;
-        }
-
-        String playerName = event.getPlayer().getName();
-
-        event.setQuitMessage(ChatColor.translateAlternateColorCodes('&', "&e" + playerName + " left the game"));
+    public void onPlayerLeave(PlayerQuitEvent event) {
+        event.setQuitMessage(plugin.getConfig().getBoolean("messages.join-leave-message.enabled", true)
+                ? plugin.getMessages().get("leave").replace("{player}", event.getPlayer().getName()) : null);
     }
-
-
 }

@@ -1,0 +1,12 @@
+{
+  "name": "PrefixPro 2.2.0",
+  "version_number": "2.2.0",
+  "version_type": "release",
+  "project_id": "Do8Ixhbm",
+  "loaders": ["spigot", "paper"],
+  "featured": false,
+  "status": "draft",
+  "game_versions": ["1.20.6", "1.21", "1.21.1", "1.21.2", "1.21.3", "1.21.4", "1.21.5", "1.21.6", "1.21.7", "1.21.8", "1.21.9", "1.21.10", "1.21.11", "26.1", "26.1.1", "26.1.2", "26.2", "26.3"],
+  "dependencies": [{"project_id": "Vebnzrzj", "dependency_type": "required"}],
+  "notes": "Local preparation only. Verify game_versions against docs/TESTING.md before upload. No publication script or credentials are included."
+}

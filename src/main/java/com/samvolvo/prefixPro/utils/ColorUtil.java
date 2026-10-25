@@ -1,79 +1,67 @@
 package com.samvolvo.prefixPro.utils;
 
 import org.bukkit.ChatColor;
-
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-/**
- * Utility helpers for translating legacy color codes, including modern hex formats,
- * into strings Bukkit can render across scoreboards, chat, and player list entries.
- */
 public final class ColorUtil {
-    // Matches either &#RRGGBB or #RRGGBB (case-insensitive), optional backslash to escape.
-    private static final Pattern HEX_PATTERN = Pattern.compile("(?i)(?<!\\\\)(?:&)?#([0-9a-f]{6})");
-
+    private static final Pattern HEX = Pattern.compile("(?i)(?<!\\\\)(?:&)?#([0-9a-f]{6})(?![0-9a-f])");
+    private static final Pattern CODES = Pattern.compile("(?i)§x(?:§[0-9a-f]){6}|§[0-9a-fk-or]");
     private ColorUtil() {}
 
-    /**
-     * Translates ampersand color codes and hex codes into legacy section-prefixed
-     * codes that Bukkit understands.
-     *
-     * @param input raw string containing color markers
-     * @return formatted string safe to pass to Bukkit APIs
-     */
     public static String colorize(String input) {
-        if (input == null || input.isEmpty()) {
-            return "";
-        }
-
-        String withHex = applyHexCodes(input);
-        return ChatColor.translateAlternateColorCodes('&', withHex);
-    }
-
-    /**
-     * Returns the trailing color codes (including hex) from a colorized string so they can be
-     * applied to following text segments.
-     */
-    public static String getLastColors(String colorizedText) {
-        if (colorizedText == null || colorizedText.isEmpty()) {
-            return "";
-        }
-
-        // Regex captures either legacy (§a) or hex (§x§r§r§g§g§b§b) color sequences.
-        Pattern pattern = Pattern.compile("(§x(§[0-9a-fA-F]){6})|(§[0-9a-fA-Fk-orK-OR])");
-        Matcher matcher = pattern.matcher(colorizedText);
-
-        String last = "";
+        if (input == null || input.isEmpty()) return "";
+        Matcher matcher = HEX.matcher(input);
+        StringBuilder out = new StringBuilder();
         while (matcher.find()) {
-            last = matcher.group();
+            StringBuilder replacement = new StringBuilder("§x");
+            for (char digit : matcher.group(1).toLowerCase(java.util.Locale.ROOT).toCharArray()) {
+                replacement.append('§').append(digit);
+            }
+            matcher.appendReplacement(out, Matcher.quoteReplacement(replacement.toString()));
         }
-        return last;
+        matcher.appendTail(out);
+        return ChatColor.translateAlternateColorCodes('&', out.toString());
     }
 
-    private static String applyHexCodes(String input) {
-        Matcher matcher = HEX_PATTERN.matcher(input);
-        StringBuffer buffer = new StringBuffer();
-
+    /** Keep the active color AND formatting; a color/reset clears earlier formats. */
+    public static String getLastColors(String text) {
+        if (text == null) return "";
+        Matcher matcher = CODES.matcher(text);
+        String color = "";
+        StringBuilder formats = new StringBuilder();
         while (matcher.find()) {
-            String hex = matcher.group(1);
-            String replacement = toLegacyHex(hex);
-            matcher.appendReplacement(buffer, Matcher.quoteReplacement(replacement));
+            String code = matcher.group().toLowerCase(java.util.Locale.ROOT);
+            char kind = code.charAt(1);
+            if (kind == 'x' || kind == 'r' || "0123456789abcdef".indexOf(kind) >= 0) {
+                color = code;
+                formats.setLength(0);
+            } else if (formats.indexOf(code) < 0) {
+                formats.append(code);
+            }
         }
-
-        matcher.appendTail(buffer);
-        return buffer.toString();
+        return color + formats;
     }
 
-    private static String toLegacyHex(String hex) {
-        StringBuilder builder = new StringBuilder()
-                .append(ChatColor.COLOR_CHAR)
-                .append('x');
+    /** Paper can return uppercase hex digits after its component round-trip. */
+    public static String normalizeCodes(String text) {
+        if (text == null) return "";
+        return CODES.matcher(text).replaceAll(match -> match.group().toLowerCase(java.util.Locale.ROOT));
+    }
 
-        for (char c : hex.toCharArray()) {
-            builder.append(ChatColor.COLOR_CHAR).append(Character.toLowerCase(c));
+    /** Do not split a hex sequence, a legacy code or a surrogate pair at a server limit. */
+    public static String truncate(String text, int limit) {
+        int end = 0;
+        while (end < text.length()) {
+            int width = Character.charCount(text.codePointAt(end));
+            if (text.charAt(end) == '§') {
+                if (end + 1 >= text.length()) break;
+                width = Character.toLowerCase(text.charAt(end + 1)) == 'x' ? 14 : 2;
+                if (end + width > text.length()) break;
+            }
+            if (end + width > limit) break;
+            end += width;
         }
-
-        return builder.toString();
+        return text.substring(0, end);
     }
 }

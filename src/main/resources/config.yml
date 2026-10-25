@@ -1,23 +1,37 @@
-# PrefixPro Configuration
-config-version: 3
+# Existing values and unknown keys are preserved; migrations create a .bak file.
+config-version: 4
 
-# Display Settings
 display:
   tab: true
   chat: true
   nametag: true
+  # LuckPerms metadata "name-color" overrides inherited prefix colors.
+  inherit-prefix-color: true
 
-# Message Settings
 messages:
   prefix: "&8[&6PrefixPro&8] &7"
   join-leave-message:
     enabled: true
 
-# AFK Settings
 afk:
-  # Time in seconds before auto-AFK (300 = 5 minutes)
-  auto-time: 300
-  # Suffix that appears when AFK
-  suffix: " &7[AFK]"
-  # Enable auto-AFK feature
+  enabled: true
   auto-enabled: true
+  # Seconds of inactivity. One shared timer checks players every second.
+  auto-time: 300
+  suffix: " &7[AFK]"
+  # Sneaking always exits AFK. Other deliberate actions can also exit AFK.
+  return-on-activity: true
+  detect-look: true
+  protection:
+    enabled: true
+    invulnerable: true
+    prevent-pushing: true
+  chat-messages: true
+  title:
+    enabled: true
+    fade-in: 0
+    stay: 40
+    fade-out: 0
+
+update-check:
+  enabled: true

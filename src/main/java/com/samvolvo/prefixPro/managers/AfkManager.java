@@ -1,123 +1,128 @@
 package com.samvolvo.prefixPro.managers;
 
 import com.samvolvo.prefixPro.PrefixPro;
-import com.samvolvo.prefixPro.utils.ColorUtil;
-import com.samvolvo.prefixPro.utils.Messages;
+import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
-import org.bukkit.scheduler.BukkitTask;
 
-import java.util.HashMap;
-import java.util.Map;
-import java.util.UUID;
+import java.util.*;
+import java.util.function.LongSupplier;
 
+/** All mutations and player API calls happen on the main thread; no per-player tasks. */
 public class AfkManager {
     private final PrefixPro plugin;
-    private final Map<UUID, Long> lastActivity;
-    private final Map<UUID, BukkitTask> afkTasks;
-    private final Map<UUID, Boolean> afkPlayers;
-
-    private final Map<UUID, BukkitTask> afkTitleTasks = new HashMap<>();
+    private final LongSupplier clock;
+    private final Map<UUID, Long> lastActivity = new HashMap<>();
+    private final Map<UUID, Protection> afkPlayers = new HashMap<>();
+    private final Set<UUID> titles = new HashSet<>();
 
     public AfkManager(PrefixPro plugin) {
+        this(plugin, () -> System.nanoTime() / 1_000_000);
+    }
+
+    public AfkManager(PrefixPro plugin, LongSupplier clock) {
         this.plugin = plugin;
-        this.lastActivity = new HashMap<>();
-        this.afkTasks = new HashMap<>();
-        this.afkPlayers = new HashMap<>();
+        this.clock = clock;
+    }
+
+    public boolean enabled() { return plugin.getConfig().getBoolean("afk.enabled", true); }
+
+    public boolean protectedFromPushing(Player player) {
+        return enabled() && isAfk(player)
+                && plugin.getConfig().getBoolean("afk.protection.enabled", true)
+                && plugin.getConfig().getBoolean("afk.protection.prevent-pushing", true);
     }
 
     public void updateActivity(Player player) {
-        if (!player.hasPermission("prefixpro.afk")) return;
-        
-        if (isAfk(player) && !player.isSneaking()) return;
-        
-        lastActivity.put(player.getUniqueId(), System.currentTimeMillis());
-        
-        if (isAfk(player)) {
-            setAfk(player, false);
-        }
-        
-        scheduleAfkCheck(player);
+        if (!enabled()) return;
+        lastActivity.put(player.getUniqueId(), clock.getAsLong());
+        if (isAfk(player) && plugin.getConfig().getBoolean("afk.return-on-activity", true)) setAfk(player, false);
     }
 
-    public void scheduleAfkCheck(Player player) {
-        cancelAfkTask(player);
-        
-        if (!plugin.getConfig().getBoolean("afk.auto-enabled")) return;
-        
-        BukkitTask task = plugin.getServer().getScheduler().runTaskLater(plugin,
-            () -> setAfk(player, true),
-            plugin.getConfig().getInt("afk.auto-time") * 20L
-        );
-        
-        afkTasks.put(player.getUniqueId(), task);
-    }
-
-    public void cancelAfkTask(Player player) {
-        BukkitTask task = afkTasks.remove(player.getUniqueId());
-        if (task != null) {
-            task.cancel();
+    public void tick() {
+        if (!enabled()) return;
+        long now = clock.getAsLong();
+        long timeout = plugin.getConfig().getInt("afk.auto-time", 300) * 1000L;
+        for (Player player : Bukkit.getOnlinePlayers()) {
+            UUID id = player.getUniqueId();
+            if (isAfk(player)) {
+                // Losing AFK permission must not leave a player protected indefinitely.
+                if (!player.hasPermission("prefixpro.afk")) {
+                    setAfk(player, false);
+                } else {
+                    showTitle(player);
+                }
+            } else if (plugin.getConfig().getBoolean("afk.auto-enabled", true)
+                    && player.hasPermission("prefixpro.afk")
+                    && now - lastActivity.computeIfAbsent(id, ignored -> now) >= timeout) {
+                setAfk(player, true);
+            }
         }
     }
 
     public void setAfk(Player player, boolean afk) {
-        if (!player.hasPermission("prefixpro.afk")) {
-            plugin.getLogger().warning("Player " + player.getName() + " attempted to use AFK without permission");
-            return;
-        }
-        
-        Boolean currentAfk = afkPlayers.get(player.getUniqueId());
-        if (currentAfk != null && currentAfk == afk) return;
-        
-        afkPlayers.put(player.getUniqueId(), afk);
-        
+        UUID id = player.getUniqueId();
+        if (afk == isAfk(player)) return;
         if (afk) {
-            player.setInvulnerable(true);
-            String suffix = ColorUtil.colorize(
-                plugin.getConfig().getString("afk.suffix", " &7[AFK]"));
-            plugin.getPrefixManager().updatePlayerAfk(player, suffix);
-            player.sendMessage(Messages.PLAYER_NOW_AFK);
-            startAfkTitle(player);
-            cancelAfkTask(player);
+            if (!enabled() || !player.isOnline() || !player.hasPermission("prefixpro.afk")) return;
+            boolean protect = plugin.getConfig().getBoolean("afk.protection.enabled", true);
+            boolean invulnerable = protect && plugin.getConfig().getBoolean("afk.protection.invulnerable", true);
+            boolean pushing = protect && plugin.getConfig().getBoolean("afk.protection.prevent-pushing", true);
+            afkPlayers.put(id, new Protection(player.isInvulnerable(), player.isCollidable(), invulnerable, pushing));
+            if (invulnerable) player.setInvulnerable(true);
+            if (pushing) player.setCollidable(false);
+            send(player, plugin.getMessages().PLAYER_NOW_AFK);
+            showTitle(player);
         } else {
-            player.setInvulnerable(false);
-            plugin.getPrefixManager().updatePlayerAfk(player, "");
-            player.sendMessage(Messages.PLAYER_NO_LONGER_AFK);
-            stopAfkTitle(player);
-            scheduleAfkCheck(player);
+            restore(player);
+            lastActivity.put(id, clock.getAsLong());
+            send(player, plugin.getMessages().PLAYER_NO_LONGER_AFK);
         }
+        plugin.getPrefixManager().updatePlayerPrefix(player);
     }
 
-    public boolean isAfk(Player player) {
-        return afkPlayers.getOrDefault(player.getUniqueId(), false);
+    private void send(Player player, String message) {
+        if (plugin.getConfig().getBoolean("afk.chat-messages", true) && !message.isEmpty()) player.sendMessage(message);
     }
+
+    private void showTitle(Player player) {
+        if (!plugin.getConfig().getBoolean("afk.title.enabled", true)) return;
+        if (plugin.getMessages().AFK_TITLE.isEmpty() && plugin.getMessages().AFK_SUBTITLE.isEmpty()) return;
+        player.sendTitle(plugin.getMessages().AFK_TITLE, plugin.getMessages().AFK_SUBTITLE,
+                plugin.getConfig().getInt("afk.title.fade-in", 0),
+                plugin.getConfig().getInt("afk.title.stay", 40),
+                plugin.getConfig().getInt("afk.title.fade-out", 0));
+        titles.add(player.getUniqueId());
+    }
+
+    private void restore(Player player) {
+        Protection saved = afkPlayers.remove(player.getUniqueId());
+        if (saved != null) {
+            if (saved.changedInvulnerability && player.isInvulnerable()) player.setInvulnerable(saved.invulnerable);
+            if (saved.changedCollision && !player.isCollidable()) player.setCollidable(saved.collidable);
+        }
+        if (titles.remove(player.getUniqueId())) player.resetTitle();
+    }
+
+    public boolean isAfk(Player player) { return afkPlayers.containsKey(player.getUniqueId()); }
 
     public void cleanup(Player player) {
-        cancelAfkTask(player);
+        restore(player);
         lastActivity.remove(player.getUniqueId());
-        afkPlayers.remove(player.getUniqueId());
     }
 
-    public void startAfkTitle(Player player) {
-        stopAfkTitle(player);
-
-        BukkitTask task = plugin.getServer().getScheduler().runTaskTimer(plugin, () -> {
-            if (!player.isOnline() || !isAfk(player)) {
-                stopAfkTitle(player);
-                return;
-            }
-
-            player.sendTitle("§cAFK", "§7Sneak To exit AFK", 0, 40, 0);
-        }, 0L, 30L);
-
-        afkTitleTasks.put(player.getUniqueId(), task);
+    /** Reload clears AFK safely and starts inactivity tracking under the new settings. */
+    public void reload() {
+        shutdown();
+        for (Player player : Bukkit.getOnlinePlayers()) updateActivity(player);
     }
 
-    public void stopAfkTitle(Player player) {
-        BukkitTask task = afkTitleTasks.remove(player.getUniqueId());
-        if (task != null) {
-            task.cancel();
-        }
-
-        player.resetTitle();
+    public void shutdown() {
+        for (Player player : Bukkit.getOnlinePlayers()) restore(player);
+        afkPlayers.clear();
+        titles.clear();
+        lastActivity.clear();
     }
-} 
+
+    private record Protection(boolean invulnerable, boolean collidable,
+                              boolean changedInvulnerability, boolean changedCollision) {}
+}

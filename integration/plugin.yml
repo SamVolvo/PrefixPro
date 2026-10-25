@@ -1,0 +1,12 @@
+name: PrefixProTest
+version: 2.2.0
+main: com.samvolvo.prefixPro.integration.PrefixProTest
+api-version: '1.20.6'
+depend: [PrefixPro, LuckPerms]
+commands:
+  prefixprotest:
+    description: Run assertions on an isolated local test server
+    permission: prefixprotest.run
+permissions:
+  prefixprotest.run:
+    default: op

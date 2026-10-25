@@ -1,43 +1,44 @@
 package com.samvolvo.prefixPro.utils;
 
-import org.bukkit.ChatColor;
+import com.samvolvo.prefixPro.PrefixPro;
 import org.bukkit.configuration.file.FileConfiguration;
 
 public class Messages {
-    private static final Logger logger = new Logger();
+    private final PrefixPro plugin;
+    public String prefix;
+    public final String CONSOLE_PLUGIN_ENABLED = "PrefixPro has been enabled!";
+    public final String CONSOLE_PLUGIN_DISABLED = "PrefixPro has been disabled!";
+    public final String CONSOLE_LUCKPERMS_NOT_FOUND = "LuckPerms not found! Disabling plugin...";
+    public String PLAYER_NOW_AFK, PLAYER_NO_LONGER_AFK, PLAYER_NO_PERMISSION, PLAYER_CONSOLE_ONLY, AFK_DISABLED;
+    public String AFK_TITLE, AFK_SUBTITLE;
+    public String COMMAND_USAGE, COMMAND_CONFIG_RELOADED, COMMAND_PLUGIN_RELOADED, COMMAND_RELOAD_FAILED;
 
-    public static String prefix = "&8[&6PrefixPro&8] &7"; // Default prefix
-
-    // Console messages (no prefix for console)
-    public static final String CONSOLE_PLUGIN_ENABLED = "PrefixPro has been enabled!";
-    public static final String CONSOLE_PLUGIN_DISABLED = "PrefixPro has been disabled!";
-    public static final String CONSOLE_LUCKPERMS_NOT_FOUND = "LuckPerms not found! Disabling plugin...";
-
-    // Player messages (with prefix)
-    public static String PLAYER_NOW_AFK;
-    public static String PLAYER_NO_LONGER_AFK;
-    public static String PLAYER_NO_PERMISSION;
-    public static String PLAYER_CONSOLE_ONLY;
-    
-    // Command messages (with prefix)
-    public static String COMMAND_USAGE;
-    public static String COMMAND_CONFIG_RELOADED;
-    public static String COMMAND_PLUGIN_RELOADED;
-
-    public static void updatePrefix(FileConfiguration config) {
-        prefix = ColorUtil.colorize(
-            config.getString("messages.prefix", "&8[&6PrefixPro&8] &7"));
-        
-        logger.debug("Updated message prefix: " + prefix);
-        
-        // Initialize messages with prefix
-        PLAYER_NOW_AFK = prefix + "You are now AFK";
-        PLAYER_NO_LONGER_AFK = prefix + "You are no longer AFK";
-        PLAYER_NO_PERMISSION = prefix + ChatColor.RED + "You don't have permission to use this command!";
-        PLAYER_CONSOLE_ONLY = prefix + "This command can only be used by players!";
-        
-        COMMAND_USAGE = prefix + ChatColor.RED + "Usage: /prefixpro <config|plugin> reload";
-        COMMAND_CONFIG_RELOADED = prefix + ChatColor.GREEN + "Configuration reloaded!";
-        COMMAND_PLUGIN_RELOADED = prefix + ChatColor.GREEN + "Plugin reloaded!";
+    public Messages(PrefixPro plugin) {
+        this.plugin = plugin;
+        updatePrefix(plugin.getConfig());
     }
-} 
+
+    public String get(String key) {
+        return ColorUtil.colorize(plugin.getMessageConfig().getString(key, ""));
+    }
+
+    private String message(String key) {
+        String text = get(key);
+        return text.isEmpty() ? "" : prefix + text;
+    }
+
+    public void updatePrefix(FileConfiguration config) {
+        prefix = ColorUtil.colorize(config.getString("messages.prefix", "&8[&6PrefixPro&8] &7"));
+        PLAYER_NOW_AFK = message("afk.chat.enable");
+        PLAYER_NO_LONGER_AFK = message("afk.chat.disable");
+        AFK_DISABLED = message("afk.chat.disabled");
+        PLAYER_NO_PERMISSION = message("permissions.no-permission");
+        PLAYER_CONSOLE_ONLY = message("commands.player-only");
+        COMMAND_USAGE = message("commands.usage");
+        COMMAND_CONFIG_RELOADED = message("commands.config-reloaded");
+        COMMAND_PLUGIN_RELOADED = message("commands.plugin-reloaded");
+        COMMAND_RELOAD_FAILED = message("commands.reload-failed");
+        AFK_TITLE = get("afk.title.title");
+        AFK_SUBTITLE = get("afk.title.subtitle");
+    }
+}
