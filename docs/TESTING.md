@@ -4,10 +4,16 @@ Local and GitHub Actions results are updated as runs finish. A configured matrix
 
 ## Current evidence
 
-- Java 21: 27 regression tests pass, including the Paper color round-trip correction.
-- Java 25: 27 tests passed before that correction; final rerun pending.
-- Paper 26.3 build 222 + LuckPerms 5.5.71 enabled successfully on Java 25.0.4 (boot-only so far).
-- Initial player runs on Paper 1.20.6 build 151 and 1.21.4 build 232 exposed uppercase Paper hex serialization. The test and tab restoration/comparison logic were corrected. Those failed initial runs are not counted as passes; final player runs are in progress.
+- Latest code commit: ed55f5dee2eb8cdf7aa8c06b4e210ca7993e462b.
+- 36 regression tests pass on Java 21 and Java 25 in GitHub Actions; locally 36 pass on Java 21.
+- Latest Spigot 26.3 API compilation with release 21 passes.
+- The expanded 20-server matrix is still running: https://github.com/SamVolvo/PrefixPro/actions/runs/40181649812 . Read [the saved status snapshot](test-results/latest-ci-status.json) and check live jobs before release.
+- An earlier source revision passed 31 assertions on 15 Paper versions (1.20.6, 1.21, 1.21.1, 1.21.3 through 1.21.11, 26.1.1, 26.1.2, 26.2) and Spigot 1.20.6, 1.21.4, 1.21.11. Exact builds, runtimes and artifact hashes are in [initial-matrix.json](test-results/initial-matrix.json).
+- Paper 26.3 build 222 additionally passed 31 real-server assertions locally on Java 25.0.4, using LuckPerms 5.5.71 and a test-only protocol bridge. The initial CI player attempt hit the isolated server whitelist; the runner now explicitly disables it only on the loopback test server.
+- The expanded matrix covers later protection/listener/tab assertions. Earlier results are not represented as complete validation of later additions.
+- No new gallery screenshots were captured. The Windows computer-use helper repeatedly timed out, including after a session reset. The user requested a report and a separate follow-up for this issue.
+
+See [the Dutch handoff report](RAPPORT-2.2.0.md) for the exact completed scope, helper failure/recovery attempts and remaining work.
 
 ## Coverage and boundaries
 
