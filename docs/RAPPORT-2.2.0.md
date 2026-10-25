@@ -32,7 +32,9 @@ De gebruiker heeft gevraagd nu te rapporteren en het probleem met de screenshotb
 
 **Laatste code:** 36 regressietests geslaagd op Java 21 en Java 25 in GitHub Actions; lokaal eveneens 36/36 op Java 21. Compilatie tegen Spigot 26.3 met Java 25 en release 21 geslaagd.
 
-De laatste, uitgebreide servermatrix loopt hier:
+De laatste, uitgebreide servermatrix heeft alle 16 Paper-combinaties doorstaan met 36 servercontroles per combinatie, inclusief Paper 26.3. De vier Spigot-jobs lopen nog op het moment van overdracht. De werkelijk gedownloade resultaten staan in [latest-completed-matrix.json](test-results/latest-completed-matrix.json).
+
+Run:
 
 https://github.com/SamVolvo/PrefixPro/actions/runs/40181649812
 

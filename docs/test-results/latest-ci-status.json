@@ -1,7 +1,7 @@
 {
   "run_url": "https://github.com/SamVolvo/PrefixPro/actions/runs/40181649812",
   "commit": "ed55f5dee2eb8cdf7aa8c06b4e210ca7993e462b",
-  "checked_at_utc": "2026-10-25 09:44:00 UTC",
+  "checked_at_utc": "2026-10-25 09:46:12 UTC",
   "jobs": [
     {
       "id": 121133785844,
@@ -48,14 +48,14 @@
     {
       "id": 121133895673,
       "name": "paper 1.21.10 / Java 21",
-      "status": "in_progress",
-      "conclusion": null
+      "status": "completed",
+      "conclusion": "success"
     },
     {
       "id": 121133895676,
       "name": "paper 1.21.8 / Java 21",
-      "status": "in_progress",
-      "conclusion": null
+      "status": "completed",
+      "conclusion": "success"
     },
     {
       "id": 121133895695,
@@ -72,14 +72,14 @@
     {
       "id": 121133895726,
       "name": "paper 1.21.11 / Java 21",
-      "status": "in_progress",
-      "conclusion": null
+      "status": "completed",
+      "conclusion": "success"
     },
     {
       "id": 121133895733,
       "name": "paper 1.21.9 / Java 21",
-      "status": "in_progress",
-      "conclusion": null
+      "status": "completed",
+      "conclusion": "success"
     },
     {
       "id": 121133895740,
@@ -90,14 +90,14 @@
     {
       "id": 121133895751,
       "name": "paper 26.1.1 / Java 25",
-      "status": "queued",
-      "conclusion": null
+      "status": "completed",
+      "conclusion": "success"
     },
     {
       "id": 121133895795,
       "name": "paper 26.1.2 / Java 25",
-      "status": "queued",
-      "conclusion": null
+      "status": "completed",
+      "conclusion": "success"
     },
     {
       "id": 121133895801,
@@ -108,37 +108,37 @@
     {
       "id": 121133896560,
       "name": "paper 26.2 / Java 25",
-      "status": "queued",
-      "conclusion": null
+      "status": "completed",
+      "conclusion": "success"
     },
     {
       "id": 121133896620,
       "name": "spigot 1.20.6 / Java 21",
-      "status": "queued",
+      "status": "in_progress",
       "conclusion": null
     },
     {
       "id": 121133896652,
       "name": "spigot 1.21.11 / Java 21",
-      "status": "queued",
+      "status": "in_progress",
       "conclusion": null
     },
     {
       "id": 121133896655,
       "name": "paper 26.3 / Java 25",
-      "status": "queued",
-      "conclusion": null
+      "status": "completed",
+      "conclusion": "success"
     },
     {
       "id": 121133896663,
       "name": "spigot 1.21.4 / Java 21",
-      "status": "queued",
+      "status": "in_progress",
       "conclusion": null
     },
     {
       "id": 121133896665,
       "name": "spigot 26.3 / Java 25",
-      "status": "queued",
+      "status": "in_progress",
       "conclusion": null
     }
   ]
