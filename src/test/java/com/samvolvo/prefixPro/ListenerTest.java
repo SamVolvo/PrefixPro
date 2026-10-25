@@ -36,10 +36,10 @@ class ListenerTest {
     }
 
     @Test void afkToggleCommandDoesNotCountAsActivityBeforeItExecutes() {
-        listener.onPlayerCommand(new PlayerCommandPreprocessEvent(player, "/afk"));
-        listener.onPlayerCommand(new PlayerCommandPreprocessEvent(player, "/PrefixPro:AFK"));
+        listener.onPlayerCommand(new PlayerCommandPreprocessEvent(player, "/afk", new HashSet<>()));
+        listener.onPlayerCommand(new PlayerCommandPreprocessEvent(player, "/PrefixPro:AFK", new HashSet<>()));
         verify(afk, never()).updateActivity(player);
-        listener.onPlayerCommand(new PlayerCommandPreprocessEvent(player, "/help"));
+        listener.onPlayerCommand(new PlayerCommandPreprocessEvent(player, "/help", new HashSet<>()));
         verify(afk).updateActivity(player);
     }
 
