@@ -2,7 +2,7 @@
 
 Datum: 25 oktober 2026. Status: **draft; nog niet vrijgeven**.
 
-De gebruiker heeft gevraagd nu te rapporteren en het probleem met de screenshotbediening in een volgende chat op te lossen.
+Bijgewerkt na de vervolgpoging van 25 oktober: de volledige CI is bevestigd; vensterdetectie werkt nu, maar echte screenshots blijven geblokkeerd bij beeldopname. Zie de nieuwe diagnose hieronder.
 
 ## Repository en oplevering
 
@@ -32,13 +32,9 @@ De gebruiker heeft gevraagd nu te rapporteren en het probleem met de screenshotb
 
 **Laatste code:** 36 regressietests geslaagd op Java 21 en Java 25 in GitHub Actions; lokaal eveneens 36/36 op Java 21. Compilatie tegen Spigot 26.3 met Java 25 en release 21 geslaagd.
 
-De laatste, uitgebreide servermatrix heeft alle 16 Paper-combinaties doorstaan met 36 servercontroles per combinatie, inclusief Paper 26.3. De vier Spigot-jobs lopen nog op het moment van overdracht. De werkelijk gedownloade resultaten staan in [latest-completed-matrix.json](test-results/latest-completed-matrix.json).
+De volledige [Actions-run 40181649812](https://github.com/SamVolvo/PrefixPro/actions/runs/40181649812) is bevestigd: **23/23 jobs geslaagd**. Alle 20 servercombinaties (16 Paper en 4 Spigot) doorstaan elk 36 controles: totaal 720 geslaagde servercontroles. Dit omvat nu ook Spigot 26.3.
 
-Run:
-
-https://github.com/SamVolvo/PrefixPro/actions/runs/40181649812
-
-De bewaarde momentopname staat in [latest-ci-status.json](test-results/latest-ci-status.json). Die is een momentopname, geen garantie dat later gestarte jobs inmiddels geslaagd zijn. Controleer deze run vóór vrijgave en actualiseer het rapport.
+De daadwerkelijk gedownloade resultaten staan in [latest-completed-matrix.json](test-results/latest-completed-matrix.json); alle jobstatussen staan in [latest-ci-status.json](test-results/latest-ci-status.json). De volledige tabel met exacte builds, Java- en protocolclientversies staat in [TESTING.md](TESTING.md). Alle serverjobs gebruikten hetzelfde Java 21-artefact met SHA-256 `c6c944a28af260d6b5bf61efadbd17ce3efee08e0a41953f0d1f7a1d5ff1d36f`.
 
 De eerdere matrix op commit `57fd30f` heeft aantoonbaar 31 servercontroles per onderstaande combinatie doorstaan:
 
@@ -59,32 +55,25 @@ De laatste matrix voegt controles toe voor schade, dubbele listeners/taken en ta
 - Niet elke tussenversie van Spigot is daadwerkelijk gestart; 1.21.2 ontbreekt in de Paper-downloadmatrix. De ondersteunde doelrange is breder dan de bewezen servercombinaties.
 - Bukkit heeft één team per entry per scoreboard. Een vreemde teamindeling behouden betekent dat PrefixPro daar de nametag niet kan overnemen.
 
-## Screenshotblokkade voor de volgende chat
+## Actuele screenshotblokkade
 
-Er zijn **geen nieuwe 2.2.0-screenshots gemaakt** en geen bestaande afbeeldingen als nieuwe testbewijzen gebruikt.
+Er zijn **geen nieuwe 2.2.0-screenshots gemaakt**. Bestaande afbeeldingen zijn niet als nieuw bewijs gebruikt.
 
-De Windows computer-use-skill is gelezen en via `mcp__node_repl__js` is `@oai/sky` geïnitialiseerd. `sky.list_windows()` gaf herhaaldelijk exact:
+De geïnstalleerde computer-use-skill is nu versie `26.1021.31345`. Na een schone JavaScript-kernel en herinitialisatie slagen `sky.list_windows()`, `sky.get_window(...)` en de herhaalde `sky.activate_window(...)`. De oude vensterdetectie-time-out is niet opnieuw opgetreden.
+
+De afzonderlijke vanilla 1.20.6-client en Paper-testserver zijn gestart. Beide spelers verbonden, de galerijopstelling werd server-side klaargezet en de client ontving de prefix-chatregels. Beide `sky.get_window_state(...)`-opnames gaven echter:
 
 ```text
-computer-use request timed out: list_windows
+computer-use request timed out: get_window_state
 ```
 
-Er is opnieuw geprobeerd na wachten, de JavaScript-kernel is gereset, `@oai/sky` is opnieuw geïmporteerd, en vensterdetectie faalde opnieuw. Er is geen bruikbare venster-/screenshotstatus verkregen. Volgens het herstelpad van de skill is de Windows-bediening gestopt. De gebruiker weet niet hoe de helper te herstellen en vraagt overdracht aan een volgende chat.
+Het voorgeschreven herstelpad voor mislukte beeldopname is uitgevoerd: verse vensterdetectie, opnieuw de unieke Minecraft-window selecteren, activeren en de opname eenmaal herhalen. Na dezelfde fout is Windows-bediening gestopt. Een nieuwe OpenGL-melding in het clientlog is vastgelegd, maar is geen bewezen oorzaak.
 
-Relevante skill op deze pc:
+[De volledige diagnose](COMPUTER-USE-DIAGNOSE-2026-10-25.md) bevat de exacte stappen, foutgrens, onzekerheden en relevante skill-/documentatieverwijzingen. De helper is dus **niet volledig hersteld**; beeldkwaliteit en native spelweergave zijn niet geverifieerd.
 
-`C:/Users/samvo/.codex/plugins/cache/openai-bundled/computer-use/26.1016.62342/skills/computer-use/SKILL.md`
+Bestaande Minecraft-installaties en accountgegevens zijn niet aangepast. Alleen de voorbereide `.tools/client`- en `.test-servers/paper-1.20.6`-omgeving is gebruikt. Extra backup: `.build/gallery-backup-20261025-110539`. De afzonderlijke client en galerijserver zijn weer afgesloten.
 
-Voorbereid voor hervatting:
-
-- `scripts/prepare-client.py`: aparte officiële vanilla 1.20.6-client, libraries/assets met checksums; geen bestaande Minecraft-profielen of accountgegevens gebruikt.
-- Clientbestanden: `.tools/client/`; eigen game-instellingen in `.tools/client/game/`.
-- `scripts/launch-client.py`: start deze aparte client op de lokale testserver.
-- `scripts/gallery-server.py`: start een geïsoleerde Paper 1.20.6-galerijsessie met één protocolspeler.
-- `prefixprotest gallery` in de testserverconsole zet echte LuckPerms-prefixen en een eenvoudige testlocatie klaar zodra PrefixTester en PrefixViewer aanwezig zijn.
-- Consoleopdrachten voor die sessie kunnen via `.build/gallery-command.txt` worden aangeleverd. Dit is alleen voor de geïsoleerde testserver.
-- De gestarte galerijsessie is met `stop` afgesloten; de gestartte losse client is gesloten. Maak bij hervatten een nieuwe sessie.
-- Leg vervolgens echte chat-, tablist-, nametag- en AFK-beelden vast, beoordeel ze en voeg ze toe aan README/galerijmateriaal. Publiceer niets zonder toestemming.
+Voor hervatten staan `scripts/prepare-client.py`, `scripts/launch-client.py`, `scripts/gallery-server.py` en de `prefixprotest gallery`-testopdracht klaar. Maak pas echte chat-, tablist-, nametag- en AFK-opnamen nadat de capturefunctie aantoonbaar werkt. Publiceer niets zonder toestemming.
 
 ## Artefact en open stappen
 
@@ -98,9 +87,8 @@ SHA-256 van de laatste lokale build:
 
 CI-JARs kunnen door buildtimestamps een andere hash hebben; alle serverjobs binnen één run gebruiken hetzelfde Java 21-artefact. Gebruik de hash van het daadwerkelijk gekozen releaseartefact.
 
-1. Controleer de volledige laatste CI-matrix en los eventuele nieuwe fouten op; werk testresultaten en PR-body bij.
-2. Herstel de computer-use-helper en maak echte screenshots.
-3. Controleer definitieve release-JAR/hash en Modrinth-versielijst tegen bewezen compatibiliteit.
-4. Leg de afgeronde draft-PR/releasevoorbereiding voor aan de eigenaar. Geen automatische publicatie of merge.
+1. Herstel de Windows beeldopnamefunctie en maak echte screenshots; vensterdetectie alleen is onvoldoende.
+2. Controleer definitieve release-JAR/hash en Modrinth-versielijst tegen de vastgelegde compatibiliteit.
+3. Leg de afgeronde draft-PR/releasevoorbereiding voor aan de eigenaar. Geen automatische publicatie of merge.
 
 `target/` bevat al sinds vóór deze opdracht getrackte buildbestanden. Hun lokale gegenereerde wijzigingen zijn niet gecommit. Reset of clean de werkmap niet: bestaande IDE-/gebruikerswijzigingen zijn nog aanwezig.

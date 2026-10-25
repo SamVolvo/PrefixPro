@@ -1,7 +1,8 @@
 {
   "run_url": "https://github.com/SamVolvo/PrefixPro/actions/runs/40181649812",
   "commit": "ed55f5dee2eb8cdf7aa8c06b4e210ca7993e462b",
-  "checked_at_utc": "2026-10-25 09:46:12 UTC",
+  "checked_at_utc": "2026-10-25 10:10:58 UTC",
+  "conclusion": "success",
   "jobs": [
     {
       "id": 121133785844,
@@ -114,14 +115,14 @@
     {
       "id": 121133896620,
       "name": "spigot 1.20.6 / Java 21",
-      "status": "in_progress",
-      "conclusion": null
+      "status": "completed",
+      "conclusion": "success"
     },
     {
       "id": 121133896652,
       "name": "spigot 1.21.11 / Java 21",
-      "status": "in_progress",
-      "conclusion": null
+      "status": "completed",
+      "conclusion": "success"
     },
     {
       "id": 121133896655,
@@ -132,14 +133,14 @@
     {
       "id": 121133896663,
       "name": "spigot 1.21.4 / Java 21",
-      "status": "in_progress",
-      "conclusion": null
+      "status": "completed",
+      "conclusion": "success"
     },
     {
       "id": 121133896665,
       "name": "spigot 26.3 / Java 25",
-      "status": "in_progress",
-      "conclusion": null
+      "status": "completed",
+      "conclusion": "success"
     }
   ]
 }

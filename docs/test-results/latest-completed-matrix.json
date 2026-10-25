@@ -1,7 +1,7 @@
 {
   "run_url": "https://github.com/SamVolvo/PrefixPro/actions/runs/40181649812",
   "commit": "ed55f5dee2eb8cdf7aa8c06b4e210ca7993e462b",
-  "note": "Completed artifacts only. Spigot jobs still running at handoff.",
+  "note": "All 20 real-server combinations passed 36 assertions each. Native game rendering is not verified.",
   "results": [
     {
       "server": "1.20.6-151-a4f0f5c (MC: 1.20.6)",
@@ -305,6 +305,70 @@
         "url": "https://fill-data.papermc.io/v1/objects/f649771a2190214306fb0cfba22c7b2cbac5df6308b1158309593603ed07d488/paper-26.3-222.jar",
         "sha256": "f649771a2190214306fb0cfba22c7b2cbac5df6308b1158309593603ed07d488",
         "luckperms": "v5.5.71-bukkit"
+      }
+    },
+    {
+      "server": "4195-b-Spigot-f6a4805-6524758 (MC: 1.20.6)",
+      "java": "21.0.12.1",
+      "passed": 36,
+      "failures": [],
+      "scope": "real-server-with-protocol-clients",
+      "client_version": "1.20.6",
+      "jar_sha256": "c6c944a28af260d6b5bf61efadbd17ce3efee08e0a41953f0d1f7a1d5ff1d36f",
+      "artifact_name": "server-spigot-1.20.6",
+      "source_metadata": {
+        "server": "Spigot",
+        "minecraft": "1.20.6",
+        "sha256": "943c428f3424357c0e43661ef7b23fef495233259d47e6f57a5e84027b0c33eb",
+        "source": "Official Spigot BuildTools --rev 1.20.6"
+      }
+    },
+    {
+      "server": "4598-Spigot-56165ca-d74c5d8 (MC: 1.21.11 Unobfuscated)",
+      "java": "21.0.12.1",
+      "passed": 36,
+      "failures": [],
+      "scope": "real-server-with-protocol-clients",
+      "client_version": "1.21.11",
+      "jar_sha256": "c6c944a28af260d6b5bf61efadbd17ce3efee08e0a41953f0d1f7a1d5ff1d36f",
+      "artifact_name": "server-spigot-1.21.11",
+      "source_metadata": {
+        "server": "Spigot",
+        "minecraft": "1.21.11",
+        "sha256": "b44dda70651771b87521ef5cdb45fcca62059b5a2047133124b43179a4fc5685",
+        "source": "Official Spigot BuildTools --rev 1.21.11"
+      }
+    },
+    {
+      "server": "4458-Spigot-73860e0-fb3f2b6 (MC: 1.21.4)",
+      "java": "21.0.12.1",
+      "passed": 36,
+      "failures": [],
+      "scope": "real-server-with-protocol-clients",
+      "client_version": "1.21.4",
+      "jar_sha256": "c6c944a28af260d6b5bf61efadbd17ce3efee08e0a41953f0d1f7a1d5ff1d36f",
+      "artifact_name": "server-spigot-1.21.4",
+      "source_metadata": {
+        "server": "Spigot",
+        "minecraft": "1.21.4",
+        "sha256": "0c28e9c54e4cea11d2ae49afa951b4855652aecd87c13d683465e5f16eebb767",
+        "source": "Official Spigot BuildTools --rev 1.21.4"
+      }
+    },
+    {
+      "server": "4663-Spigot-bed90fc-c4db4c3 (MC: 26.3)",
+      "java": "25.0.4.1",
+      "passed": 36,
+      "failures": [],
+      "scope": "real-server-with-protocol-clients",
+      "client_version": "26.1",
+      "jar_sha256": "c6c944a28af260d6b5bf61efadbd17ce3efee08e0a41953f0d1f7a1d5ff1d36f",
+      "artifact_name": "server-spigot-26.3",
+      "source_metadata": {
+        "server": "Spigot",
+        "minecraft": "26.3",
+        "sha256": "59f4a101e03012e5182e43c77f06679cdcb15d779c7c4ab6899200c567d79537",
+        "source": "Official Spigot BuildTools --rev 26.3"
       }
     }
   ]

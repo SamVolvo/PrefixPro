@@ -79,7 +79,9 @@ The distributable is `target/PrefixPro-2.2.0.jar`. Bukkit, LuckPerms and Gson ar
 
 [GitHub Actions](.github/workflows/ci.yml) runs Java 21/25 regression tests, latest-API compilation and real-server tests using the same Java 21 artifact. `integration/` contains a test-only fixture, never a production plugin. [TESTING.md](docs/TESTING.md) distinguishes protocol clients, rendered Minecraft gameplay and boot checks.
 
-The new gallery is pending a Windows computer-use helper repair; no mock screenshots have been substituted. See [the handoff report](docs/RAPPORT-2.2.0.md).
+**Validation:** [the completed Actions run](https://github.com/SamVolvo/PrefixPro/actions/runs/40181649812) passed all 23 jobs: Java 21/25 regressions, latest-API compilation and 20 actual-server combinations. Exact builds and test boundaries are in [TESTING.md](docs/TESTING.md).
+
+The new gallery remains pending a desktop image-capture repair. No mock screenshots have been substituted. See [the current diagnosis](docs/COMPUTER-USE-DIAGNOSE-2026-10-25.md) and [the report](docs/RAPPORT-2.2.0.md).
 
 See [CHANGELOG.md](CHANGELOG.md) and [draft release notes](release/2.2.0.md). Releases and gallery uploads require owner approval; the workflow does not publish or merge.
 
