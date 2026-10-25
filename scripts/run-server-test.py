@@ -24,6 +24,8 @@ shutil.copy2(ROOT / ".build/PrefixProTest.jar", plugins)
 (folder / "server.properties").write_text(f"""server-ip=127.0.0.1
 server-port={args.port}
 online-mode=false
+white-list=false
+enforce-whitelist=false
 enforce-secure-profile=false
 spawn-protection=0
 view-distance=2
