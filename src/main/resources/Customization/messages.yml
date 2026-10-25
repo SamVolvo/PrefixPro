@@ -1,0 +1,23 @@
+messages-version: 2
+
+afk:
+  chat:
+    enable: "&eYou are now AFK!"
+    disable: "&eYou are no longer AFK!"
+    disabled: "&cThe AFK system is disabled."
+  title:
+    title: "&eYou are now AFK!"
+    subtitle: "&bSneak to exit AFK!"
+
+permissions:
+  no-permission: "&cYou don't have permission to use this command!"
+
+commands:
+  player-only: "&cThis command can only be used by players!"
+  usage: "&cUsage: /prefixpro <config|plugin> reload"
+  config-reloaded: "&aConfiguration reloaded!"
+  plugin-reloaded: "&aPrefixPro settings reloaded safely. Restart the server to update the JAR."
+  reload-failed: "&cReload failed. Previous settings remain active; check the server log."
+
+join: "&e{player} joined the game"
+leave: "&e{player} left the game"

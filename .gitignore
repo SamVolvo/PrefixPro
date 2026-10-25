@@ -1,0 +1,9 @@
+/target/
+/.build/
+/.test-servers/
+/.tools/
+/.idea/
+*.iml
+/dependency-reduced-pom.xml
+/.build-*.log
+/scripts/node_modules/

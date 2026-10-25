@@ -1,0 +1,123 @@
+name: Build and compatibility
+on:
+  push:
+    branches: [master]
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    name: Regression tests / Java ${{ matrix.java }}
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        java: ['21', '25']
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: ${{ matrix.java }}
+          cache: maven
+      - run: mvn -B -ntp clean verify
+      - if: matrix.java == '21'
+        run: python scripts/build-fixture.py
+      - if: matrix.java == '21'
+        uses: actions/upload-artifact@v4
+        with:
+          name: universal-java21
+          include-hidden-files: true
+          path: |
+            target/PrefixPro-2.2.0.jar
+            .build/PrefixProTest.jar
+      - if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: junit-java${{ matrix.java }}
+          path: target/surefire-reports/
+
+  api:
+    name: Compile against latest Spigot API
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '25'
+          cache: maven
+      - run: mvn -B -ntp -Dspigot.version=26.3-R0.1-SNAPSHOT -Dmaven.test.skip=true clean compile
+
+  servers:
+    name: ${{ matrix.server }} ${{ matrix.mc }} / Java ${{ matrix.java }}
+    needs: build
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    strategy:
+      fail-fast: false
+      max-parallel: 4
+      matrix:
+        include:
+          - {server: paper, mc: '1.20.6', java: '21', client: '1.20.6'}
+          - {server: paper, mc: '1.21', java: '21', client: '1.21.1'}
+          - {server: paper, mc: '1.21.1', java: '21', client: '1.21.1'}
+          - {server: paper, mc: '1.21.3', java: '21', client: '1.21.3'}
+          - {server: paper, mc: '1.21.4', java: '21', client: '1.21.4'}
+          - {server: paper, mc: '1.21.5', java: '21', client: '1.21.5'}
+          - {server: paper, mc: '1.21.6', java: '21', client: '1.21.6'}
+          - {server: paper, mc: '1.21.7', java: '21', client: '1.21.8'}
+          - {server: paper, mc: '1.21.8', java: '21', client: '1.21.8'}
+          - {server: paper, mc: '1.21.9', java: '21', client: '1.21.9'}
+          - {server: paper, mc: '1.21.10', java: '21', client: '1.21.9'}
+          - {server: paper, mc: '1.21.11', java: '21', client: '1.21.11'}
+          - {server: paper, mc: '26.1.1', java: '25', client: '26.1'}
+          - {server: paper, mc: '26.1.2', java: '25', client: '26.1'}
+          - {server: paper, mc: '26.2', java: '25', client: '26.1', bridge: true}
+          - {server: paper, mc: '26.3', java: '25', client: '26.1', bridge: true}
+          - {server: spigot, mc: '1.20.6', java: '21', client: '1.20.6'}
+          - {server: spigot, mc: '1.21.4', java: '21', client: '1.21.4'}
+          - {server: spigot, mc: '1.21.11', java: '21', client: '1.21.11'}
+          - {server: spigot, mc: '26.3', java: '25', client: '26.1', bridge: true}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: ${{ matrix.java }}
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+          cache: npm
+          cache-dependency-path: scripts/package-lock.json
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - uses: actions/download-artifact@v4
+        with:
+          name: universal-java21
+      - run: npm ci --ignore-scripts --no-audit --no-fund
+        working-directory: scripts
+      - run: python scripts/download-paper.py ${{ matrix.mc }}
+      - if: matrix.server == 'spigot'
+        run: python scripts/build-spigot.py ${{ matrix.mc }} --java "$JAVA_HOME/bin/java"
+      - if: matrix.bridge == true
+        run: python scripts/download-bridge.py .test-servers/${{ matrix.server }}-${{ matrix.mc }}
+      - name: Real-server player integration
+        run: >-
+          python scripts/run-server-test.py .test-servers/${{ matrix.server }}-${{ matrix.mc }}
+          --java "$JAVA_HOME/bin/java" --client-version ${{ matrix.client }} --accept-eula
+      - if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: server-${{ matrix.server }}-${{ matrix.mc }}
+          include-hidden-files: true
+          path: |
+            .test-servers/*/download.json
+            .test-servers/*/prefixpro-result.json
+            .test-servers/*/test-console.log
+            .test-servers/*/clients.log
+            .tools/spigot-*/build.log
