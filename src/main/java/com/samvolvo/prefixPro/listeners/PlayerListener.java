@@ -5,6 +5,7 @@ import org.bukkit.Location;
 import org.bukkit.entity.Player;
 import org.bukkit.event.*;
 import org.bukkit.event.player.*;
+import org.bukkit.event.entity.EntityDamageEvent;
 
 public class PlayerListener implements Listener {
     private final PrefixPro plugin;
@@ -20,6 +21,13 @@ public class PlayerListener implements Listener {
     public void onPlayerQuit(PlayerQuitEvent event) {
         plugin.getAfkManager().cleanup(event.getPlayer());
         plugin.getPrefixManager().cleanup(event.getPlayer());
+    }
+
+    @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
+    public void onDamage(EntityDamageEvent event) {
+        if (event.getEntity() instanceof Player player && plugin.getAfkManager().protectedFromDamage(player)) {
+            event.setCancelled(true);
+        }
     }
 
     @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)

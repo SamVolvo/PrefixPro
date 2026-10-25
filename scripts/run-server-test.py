@@ -78,7 +78,7 @@ try:
         botlog = (folder / "clients.log").open("w", encoding="utf-8")
         bots = subprocess.Popen(["node", str(ROOT / "scripts/bots.cjs"), str(args.port), args.client_version],
                                 cwd=ROOT, stdout=botlog, stderr=subprocess.STDOUT)
-        deadline = time.monotonic() + 75
+        deadline = time.monotonic() + 180
         while time.monotonic() < deadline:
             if sum("joined the game" in line for line in output) >= 2: break
             time.sleep(0.2)

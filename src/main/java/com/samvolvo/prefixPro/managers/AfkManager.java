@@ -26,6 +26,12 @@ public class AfkManager {
 
     public boolean enabled() { return plugin.getConfig().getBoolean("afk.enabled", true); }
 
+    public boolean protectedFromDamage(Player player) {
+        return enabled() && isAfk(player)
+                && plugin.getConfig().getBoolean("afk.protection.enabled", true)
+                && plugin.getConfig().getBoolean("afk.protection.invulnerable", true);
+    }
+
     public boolean protectedFromPushing(Player player) {
         return enabled() && isAfk(player)
                 && plugin.getConfig().getBoolean("afk.protection.enabled", true)

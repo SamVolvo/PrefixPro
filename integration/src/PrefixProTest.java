@@ -9,6 +9,8 @@ import org.bukkit.*;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.event.player.*;
+import org.bukkit.event.entity.EntityDamageEvent;
+import org.bukkit.event.HandlerList;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.scoreboard.*;
 import java.nio.file.*;
@@ -41,6 +43,10 @@ public final class PrefixProTest extends JavaPlugin {
             if (actor == null || viewer == null) {
                 failed.add("Both real protocol clients must be logged in"); finish(); return true;
             }
+            if (args.length > 0 && args[0].equals("gallery")) {
+                try { gallery(); } catch (Exception error) { error.printStackTrace(); }
+                return true;
+            }
             try {
                 running = true;
                 lp = Bukkit.getServicesManager().load(LuckPerms.class);
@@ -72,6 +78,37 @@ public final class PrefixProTest extends JavaPlugin {
         getLogger().info("PASS: " + name);
     }
 
+    private void gallery() throws Exception {
+        lp = Bukkit.getServicesManager().load(LuckPerms.class);
+        prefix.getConfig().set("afk.auto-enabled", false);
+        prefix.getConfig().save(prefix.getDataFolder().toPath().resolve("config.yml").toFile());
+        prefix.reload();
+        for (Player player : List.of(actor, viewer)) {
+            player.setGameMode(GameMode.CREATIVE);
+            User user = lp.getUserManager().getUser(player.getUniqueId());
+            user.data().clear(node -> node instanceof PrefixNode || node instanceof MetaNode);
+            user.data().add(PrefixNode.builder(player == actor ? "&#ffb347[Admin]" : "&#55ddaa[Builder]", 1000).build());
+            user.data().add(MetaNode.builder("name-color", player == actor ? "&#ffe0a3" : "&#aaffdd").build());
+            lp.getUserManager().saveUser(user);
+        }
+        World world = actor.getWorld();
+        world.setTime(1000);
+        world.setStorm(false);
+        int y = world.getHighestBlockYAt(0, 0);
+        for (int x = -9; x <= 9; x++) for (int z = -8; z <= 9; z++) {
+            world.getBlockAt(x, y, z).setType(Math.abs(x) == 9 || z == -8 || z == 9
+                    ? Material.MOSS_BLOCK : Material.STONE_BRICKS);
+        }
+        actor.teleport(new Location(world, 0.5, y + 1, 5.5, 180f, 0f));
+        viewer.teleport(new Location(world, 0.5, y + 1, 1.5, 0f, 0f));
+        Bukkit.getScheduler().runTaskLater(this, () -> {
+            prefix.getPrefixManager().refreshAll();
+            actor.chat("Prefixes, hex colors and live LuckPerms updates.");
+            viewer.chat("Chat, tab list and nametags — with optional AFK.");
+        }, 40L);
+        getLogger().info("GALLERY_READY: real players and PrefixPro, staged test world");
+    }
+
     private void settings(Consumer<org.bukkit.configuration.file.FileConfiguration> edit) throws Exception {
         edit.accept(prefix.getConfig());
         prefix.getConfig().save(configFile.toFile());
@@ -99,6 +136,9 @@ public final class PrefixProTest extends JavaPlugin {
                 Bukkit.dispatchCommand(actor, "afk");
                 check("/afk enables", prefix.getAfkManager().isAfk(actor));
                 check("AFK protection", actor.isInvulnerable() && !actor.isCollidable());
+                var damage = new EntityDamageEvent(actor, EntityDamageEvent.DamageCause.CUSTOM, 1.0);
+                Bukkit.getPluginManager().callEvent(damage);
+                check("AFK damage cancellation", damage.isCancelled());
             }
             case 2 -> {
                 check("AFK suffix preserved after prefix refresh", actor.getPlayerListName().contains("[AFK]"));
@@ -116,6 +156,9 @@ public final class PrefixProTest extends JavaPlugin {
                 Bukkit.dispatchCommand(actor, "afk");
                 check("optional protection", prefix.getAfkManager().isAfk(actor)
                         && !actor.isInvulnerable() && actor.isCollidable());
+                var damage = new EntityDamageEvent(actor, EntityDamageEvent.DamageCause.CUSTOM, 1.0);
+                Bukkit.getPluginManager().callEvent(damage);
+                check("optional protection permits damage", !damage.isCancelled());
                 Bukkit.dispatchCommand(actor, "afk");
                 settings(c -> { c.set("afk.protection.enabled", true); c.set("afk.auto-time", 1); });
             }
@@ -132,8 +175,13 @@ public final class PrefixProTest extends JavaPlugin {
                 messages.save(messagesFile.toFile());
                 Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "prefixpro config reload");
                 check("config reload refreshes messages", prefix.getMessages().AFK_TITLE.equals("Reloaded AFK"));
+                int listeners = HandlerList.getRegisteredListeners(prefix).size();
+                long tasks = Bukkit.getScheduler().getPendingTasks().stream().filter(t -> t.getOwner().equals(prefix)).count();
                 Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "prefixpro plugin reload");
                 check("legacy plugin reload keeps instance enabled", prefix.isEnabled());
+                check("reload does not duplicate listeners", HandlerList.getRegisteredListeners(prefix).size() == listeners);
+                check("reload does not duplicate tasks", Bukkit.getScheduler().getPendingTasks().stream()
+                        .filter(t -> t.getOwner().equals(prefix)).count() == tasks);
                 var oldConfig = prefix.getConfig();
                 Files.writeString(messagesFile, "afk: [unterminated");
                 Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "prefixpro config reload");
@@ -156,6 +204,7 @@ public final class PrefixProTest extends JavaPlugin {
                 check("nametag toggle releases own teams", custom.getEntryTeam(actor.getName()) == null);
                 check("foreign team survives display toggle", custom.getTeam("foreign") != null);
                 check("chat toggle", prefix.getPrefixManager().chatFormat(actor.getUniqueId()) == null);
+                check("tab toggle restores original name", actor.getPlayerListName().equals(actor.getName()));
                 settings(c -> { c.set("display.tab", true); c.set("display.nametag", true); c.set("display.chat", true); });
                 // Exercise actual async Bukkit event dispatch, not a synchronous simulation.
                 Bukkit.getScheduler().runTaskAsynchronously(this, () -> {

@@ -1,8 +1,10 @@
 const mc = require('minecraft-protocol')
 const port = Number(process.argv[2])
 const version = process.argv[3]
-const clients = ['PrefixTester', 'PrefixViewer'].map(username => {
+console.log('CONNECTING ' + version + ' on localhost:' + port)
+const clients = (process.argv[4] === 'gallery' ? ['PrefixViewer'] : ['PrefixTester', 'PrefixViewer']).map(username => {
   const client = mc.createClient({ host: '127.0.0.1', port, username, auth: 'offline', version })
+  client.on('connect', () => console.log('TCP ' + username))
   client.on('login', () => console.log('LOGIN ' + username))
   client.on('playerJoin', () => console.log('PLAY ' + username))
   client.on('position', packet => {

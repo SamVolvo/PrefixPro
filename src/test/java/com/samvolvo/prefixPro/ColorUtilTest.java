@@ -31,4 +31,8 @@ class ColorUtilTest {
         assertFalse(UpdateChecker.isNewerVersion("2.2.0", "2.2.0"));
         assertFalse(UpdateChecker.isNewerVersion("broken", "2.2.0"));
     }
+
+    @Test void paperColorRoundTripPreservesTextCase() {
+        assertEquals("§x§a§b§c§d§e§f§lPlayerName", ColorUtil.normalizeCodes("§x§A§B§C§D§E§F§LPlayerName"));
+    }
 }

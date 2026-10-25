@@ -73,9 +73,23 @@ class AfkManagerTest {
         afk.setAfk(player, true);
         assertTrue(afk.isAfk(player));
         assertFalse(afk.protectedFromPushing(player));
+        assertFalse(afk.protectedFromDamage(player));
         afk.setAfk(player, false);
         verify(player, never()).setInvulnerable(anyBoolean());
         verify(player, never()).setCollidable(anyBoolean());
+    }
+
+    @Test void damageAndPushingProtectionCanBeConfiguredIndependently() {
+        config.set("afk.protection.invulnerable", false);
+        afk.setAfk(player, true);
+        assertFalse(afk.protectedFromDamage(player));
+        assertTrue(afk.protectedFromPushing(player));
+        afk.setAfk(player, false);
+        config.set("afk.protection.invulnerable", true);
+        config.set("afk.protection.prevent-pushing", false);
+        afk.setAfk(player, true);
+        assertTrue(afk.protectedFromDamage(player));
+        assertFalse(afk.protectedFromPushing(player));
     }
 
     @Test void permissionLossCannotPreventRestoration() {
